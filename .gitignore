@@ -3,6 +3,7 @@ data/
 __pycache__/
 *.csv
 *.json
+*.pkl
 
 # Ignorar archivos del sistema
 .DS_Store
