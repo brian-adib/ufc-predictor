@@ -1,0 +1,9 @@
+# Ignorar carpetas de datos y entornos
+data/
+__pycache__/
+*.csv
+*.json
+
+# Ignorar archivos del sistema
+.DS_Store
+Thumbs.db
