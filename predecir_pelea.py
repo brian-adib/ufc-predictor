@@ -21,15 +21,14 @@ df_master['event_date'] = pd.to_datetime(df_master['event_date'])
 df_master = df_master.sort_values('event_date')
 
 def calcular_racha_actual(fighter_id):
-    """Calcula cuántas victorias seguidas tiene un peleador en sus últimas peleas."""
+    """Calcula cuántas victorias seguidas tiene un peleador."""
     peleas = df_master[(df_master['r_fighter_id'] == fighter_id) | (df_master['b_fighter_id'] == fighter_id)].tail(15)
     racha = 0
-    # Iteramos en orden inverso (de la más reciente a la más antigua)
     for _, row in peleas.iloc[::-1].iterrows():
         if row['winner_id'] == fighter_id:
             racha += 1
         else:
-            break # Si pierde, la racha se corta
+            break
     return racha
 
 def predecir_pelea(peleador_rojo, peleador_azul):
@@ -65,7 +64,7 @@ def predecir_pelea(peleador_rojo, peleador_azul):
     b_is_southpaw = 1 if p_azul.get('stance') == 'Southpaw' else 0
     stance_advantage = r_is_southpaw - b_is_southpaw
 
-    # Creamos el vector EXACTO que espera el nuevo modelo
+    # Creamos el vector con TODAS las variables (las 16)
     datos_pelea = {
         'diff_slpm': (p_rojo['slpm'] or 0) - (p_azul['slpm'] or 0),
         'diff_str_acc': (p_rojo['str_acc'] or 0) - (p_azul['str_acc'] or 0),
@@ -78,8 +77,10 @@ def predecir_pelea(peleador_rojo, peleador_azul):
         'diff_height': convertir_altura(p_rojo['height']) - convertir_altura(p_azul['height']),
         'diff_reach_inches': (p_rojo['reach_inches'] or 0) - (p_azul['reach_inches'] or 0),
         'diff_age': calcular_edad(p_rojo['dob']) - calcular_edad(p_azul['dob']),
-        'is_title_fight': 0, # Ponemos 0 por defecto para pruebas
+        'is_title_fight': 0, 
         'diff_win_streak': racha_rojo - racha_azul,
+        'r_is_southpaw': r_is_southpaw,       # <--- AÑADIDO
+        'b_is_southpaw': b_is_southpaw,       # <--- AÑADIDO
         'stance_advantage': stance_advantage
     }
 
